@@ -30,4 +30,14 @@ describe("Blockchain tests", () => {
         const result = blockchain.addBlock(new Block(-1, blockchain.getBlocks()[0].getHash(), "Block 2"));
         expect(result.isSucess()).toBeFalsy();
     })
+
+    test("Should get block", () => {
+        const blockchain = new Blockchain();
+        expect(blockchain.getBlock(blockchain.getBlocks()[0].getHash())).toBeTruthy();
+    })
+
+    test("Should not get block", () => {
+        const blockchain = new Blockchain();
+        expect(blockchain.getBlock("abc")).toBeFalsy();
+    })
 })
