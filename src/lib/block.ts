@@ -6,12 +6,14 @@ export default class Block {
     private readonly timeStamp: number;
     private readonly previousHash: string;
     private readonly data: string;
+    private readonly hash: string;
 
     constructor(index: number, previousHash: string, data: string) {
         this.index = index;
         this.timeStamp = Date.now();
         this.previousHash = previousHash;
         this.data = data;
+        this.hash = this.getHash();
     }
 
     getIndex(): number {
