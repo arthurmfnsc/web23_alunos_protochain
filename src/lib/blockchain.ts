@@ -1,4 +1,5 @@
 import Block from "./block";
+import Validation from "./validation";
 
 export default class Blockchain {
     private blocks: Block[];
@@ -17,20 +18,22 @@ export default class Blockchain {
         return this.blocks[this.blocks.length - 1];
     }
 
-    addBlock(block: Block): boolean {
+    addBlock(block: Block): Validation {
         const lastBlock = this.getLastBlock();
-        if (!block.isValid(lastBlock.getHash(), lastBlock.getIndex())) return false;
+        const validation = block.isValid(lastBlock.getHash(), lastBlock.getIndex()); 
+        if (!validation.isSucess()) return new Validation(false, `Invalid block: ${validation.getMessage()}`);
         this.blocks.push(block);
         this.nextIndex++;
-        return true;
+        return new Validation();
     }
 
-    isValid(): boolean {
+    isValid(): Validation {
         for(let i = this.blocks.length - 1; i > 0; i--) {
             const currentBlock = this.blocks[i];
             const previousBlock = this.blocks[i - 1];
-            if (!currentBlock.isValid(previousBlock.getHash(), previousBlock.getIndex())) return false; 
+            const validation = currentBlock.isValid(previousBlock.getHash(), previousBlock.getIndex()); 
+            if (!validation.isSucess()) return new Validation(false, `Invalid block #${currentBlock.getIndex()}: ${validation.getMessage()}`); 
         }
-        return true;
+        return new Validation();
     }
 }
