@@ -10,16 +10,16 @@ describe("Block tests", () => {
 
     test("Should be valid", () => {
         const block = new Block(1, genesis.getHash(), "block 2");
-        expect(block.isValid(genesis.getHash(), genesis.getIndex())).toBeTruthy()
+        expect(block.isValid(genesis.getHash(), genesis.getIndex()).isSucess()).toBeTruthy()
     })
 
     test("Should not be valid when invalid previous hash", () => {
         const block = new Block(1, "", "block 2");
-        expect(block.isValid(genesis.getHash(), genesis.getIndex())).toBeFalsy()
+        expect(block.isValid(genesis.getHash(), genesis.getIndex()).isSucess()).toBeFalsy()
     })
 
     test("Should not be valid when invalid index", () => {
         const block = new Block(-1, genesis.getHash(), "block 2");
-        expect(block.isValid(genesis.getHash(), genesis.getIndex())).toBeFalsy()
+        expect(block.isValid(genesis.getHash(), genesis.getIndex()).isSucess()).toBeFalsy()
     })
 })

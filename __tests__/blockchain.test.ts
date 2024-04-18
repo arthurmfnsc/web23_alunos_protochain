@@ -10,13 +10,13 @@ describe("Blockchain tests", () => {
 
     test("Should be valid (genesis)", () => {
         const blockchain = new Blockchain();
-        expect(blockchain.isValid()).toBeTruthy();
+        expect(blockchain.isValid().isSucess()).toBeTruthy();
     })
 
     test("Should be valid (two blocks)", () => {
         const blockchain = new Blockchain();
         blockchain.addBlock(new Block(1, blockchain.getBlocks()[0].getHash(), "Block 2"));
-        expect(blockchain.isValid()).toBeTruthy();
+        expect(blockchain.isValid().isSucess()).toBeTruthy();
     })
 
     test("Should add block", () => {
@@ -28,6 +28,6 @@ describe("Blockchain tests", () => {
     test("Should not add block", () => {
         const blockchain = new Blockchain();
         const result = blockchain.addBlock(new Block(-1, blockchain.getBlocks()[0].getHash(), "Block 2"));
-        expect(result).toBeFalsy();
+        expect(result.isSucess()).toBeFalsy();
     })
 })
