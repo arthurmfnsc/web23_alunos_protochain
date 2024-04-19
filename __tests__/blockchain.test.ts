@@ -1,6 +1,8 @@
 import Block from "../src/lib/block";
 import Blockchain from "../src/lib/blockchain";
 
+jest.mock("../src/lib/block");
+
 describe("Blockchain tests", () => {
     
     test("Should has genesis block", () => {
@@ -38,6 +40,6 @@ describe("Blockchain tests", () => {
 
     test("Should not get block", () => {
         const blockchain = new Blockchain();
-        expect(blockchain.getBlock("abc")).toBeFalsy();
+        expect(blockchain.getBlock("invalid")).toBeFalsy();
     })
 })
