@@ -1,6 +1,7 @@
 import express from 'express';
 import morgan from 'morgan';
 import Blockchain from '../lib/blockchain';
+import Block from '../lib/block';
 
 const PORT = 3000;
 
@@ -34,5 +35,16 @@ app.get("/blocks/:indexOrHash", (req, res, next) => {
         return res.sendStatus(404);
     } else {
         res.json(block);
+    }
+});
+
+app.post("/blocks", (req, res, next) => {
+    const block = new Block(req.body.index as number, req.body.previousHash as string, req.body.data as string);
+    const validation = blockchain.addBlock(block);
+
+    if (validation.isSucess()) {
+        res.status(201).json(block);
+    } else {
+        res.status(400).json(validation);
     }
 });

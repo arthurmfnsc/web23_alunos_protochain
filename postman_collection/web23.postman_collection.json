@@ -1,0 +1,102 @@
+{
+	"info": {
+		"_postman_id": "58a83fcb-4967-4074-9e56-f49a2129d715",
+		"name": "web23",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3520600"
+	},
+	"item": [
+		{
+			"name": "protochain",
+			"item": [
+				{
+					"name": "blockchain status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get block by index",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/blocks/0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"blocks",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get block by hash",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/blocks/790a3aecf04e733423dbd55fd466b3c9cbefd234651510365753bbdd3a9e7545",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"blocks",
+								"790a3aecf04e733423dbd55fd466b3c9cbefd234651510365753bbdd3a9e7545"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create block",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"index\": 1,\n    \"previousHash\": \"b92f06a3f32167539426b0e60cf7406c659463ae9b3027492ab7466767fc3c3e\",\n    \"data\": \"block 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/blocks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"blocks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
