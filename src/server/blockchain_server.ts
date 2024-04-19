@@ -6,14 +6,18 @@ import Block from '../lib/block';
 const PORT = 3000;
 
 const app = express();
-app.use(morgan("tiny"));
 app.use(express.json())
 
 const blockchain = new Blockchain();
 
-app.listen(PORT, () => {
-    console.log(`Blockchain server is running at ${PORT}!`)
-})
+if (process.argv.includes("--run")) {
+    app.use(morgan("tiny"));
+
+    app.listen(PORT, () => {
+        console.log(`Blockchain server is running at ${PORT}!`)
+    })
+}
+
 
 app.get("/status", (req, res, next) => {
     res.json({
@@ -48,3 +52,7 @@ app.post("/blocks", (req, res, next) => {
         res.status(400).json(validation);
     }
 });
+
+export {
+    app
+};
