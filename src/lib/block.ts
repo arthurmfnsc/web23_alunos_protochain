@@ -6,7 +6,9 @@ export default class Block {
     private readonly timeStamp: number;
     private readonly previousHash: string;
     private readonly data: string;
-    private readonly hash: string;
+    private hash: string;
+    private nonce = 0;
+    private miner = "";
 
     constructor(index: number, previousHash: string, data: string) {
         this.index = index;
@@ -21,16 +23,27 @@ export default class Block {
     }
 
     getHash(): string {
-        return SHA256(this.index + this.data +this.timeStamp + this.previousHash).toString();
+        return SHA256(this.index + this.data +this.timeStamp + this.previousHash + this.nonce + this.miner).toString();
     }
 
-    isValid(previousHash: string, previousIndex: number): Validation {
-        if (previousIndex !== this.index - 1) {
-            return new Validation(false, "Invalid previous index!");
-        }
+    mine(difficulty: number, miner: string) {
+        this.miner = miner;
 
+        const prefix = new Array(difficulty + 1).join("0");
+
+        do {
+            this.nonce++;
+            this.hash = this.getHash();
+        } while(!this.getHash().startsWith(prefix));
+    }
+
+    isValid(previousHash: string, previousIndex: number, difficulty: number): Validation {
         if (this.index < 0) {
             return new Validation(false, "Invalid index!");
+        }
+
+        if (previousIndex !== this.index - 1) {
+            return new Validation(false, "Invalid previous index!");
         }
 
         if (this.previousHash !== previousHash) {
@@ -39,6 +52,16 @@ export default class Block {
 
         if (!this.data) {
             return new Validation(false, "Invalid data!");
+        }
+
+        if (!this.nonce || !this.miner) {
+            return new Validation(false, "No mined!");
+        }
+
+        const prefix = new Array(difficulty + 1).join("0");
+
+        if (!this.getHash().startsWith(prefix)) {
+            return new Validation(false, "Invalid hash!");
         }
 
         return new Validation();
