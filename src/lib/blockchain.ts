@@ -4,10 +4,15 @@ import Validation from "./validation";
 export default class Blockchain {
     private readonly blocks: Block[];
     private nextIndex = 0;
-    
+    private static readonly DIFFICULTY_FACTOR = 5;
+
     constructor() {
         this.blocks = [new Block(this.nextIndex, "", "Genesis Block")]
         this.nextIndex++;
+    }
+
+    getDifficulty(): number {
+        return Math.ceil(this.blocks.length / Blockchain.DIFFICULTY_FACTOR);
     }
 
     getBlocks(): Block[] {
@@ -20,7 +25,7 @@ export default class Blockchain {
 
     addBlock(block: Block): Validation {
         const lastBlock = this.getLastBlock();
-        const validation = block.isValid(lastBlock.getHash(), lastBlock.getIndex()); 
+        const validation = block.isValid(lastBlock.getHash(), lastBlock.getIndex(), this.getDifficulty()); 
 
         if (!validation.isSucess()) {
             return new Validation(false, `Invalid block: ${validation.getMessage()}`);
@@ -39,7 +44,7 @@ export default class Blockchain {
         for(let i = this.blocks.length - 1; i > 0; i--) {
             const currentBlock = this.blocks[i];
             const previousBlock = this.blocks[i - 1];
-            const validation = currentBlock.isValid(previousBlock.getHash(), previousBlock.getIndex()); 
+            const validation = currentBlock.isValid(previousBlock.getHash(), previousBlock.getIndex(), this.getDifficulty()); 
             if (!validation.isSucess()) {
                 return new Validation(false, `Invalid block #${currentBlock.getIndex()}: ${validation.getMessage()}`); 
             }
