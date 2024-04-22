@@ -1,5 +1,6 @@
 import Block from "./block";
 import Validation from "../validation";
+import BlockInfo from "../block_info";
 
 export default class Blockchain {
     private readonly blocks: Block[];
@@ -34,5 +35,20 @@ export default class Blockchain {
 
     isValid(): Validation {
         return new Validation();
+    }
+
+    getFeePerTx(): number {
+        return 1;
+    }
+
+    getNextBlock(): BlockInfo {
+        return {
+            data: new Date().toString(),
+            difficulty: 0,
+            previousHash: this.getLastBlock().getHash(),
+            index: 1,
+            feePerTx: this.getFeePerTx(),
+            maxDifficulty: 62
+        } as BlockInfo;
     }
 }

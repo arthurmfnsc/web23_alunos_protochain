@@ -1,4 +1,4 @@
-import express from 'express';
+import express, {Request, Response, NextFunction} from 'express';
 import morgan from 'morgan';
 import Blockchain from '../lib/blockchain';
 import Block from '../lib/block';
@@ -18,16 +18,11 @@ if (process.argv.includes("--run")) {
     })
 }
 
-
-app.get("/status", (req, res, next) => {
-    res.json({
-        numberOfBlocks: blockchain.getBlocks().length,
-        isValid: blockchain.isValid(),
-        lastBlock: blockchain.getLastBlock()
-    })
+app.get("/blocks/next", (req: Request, res: Response, next: NextFunction) => {
+    res.json(blockchain.getNextBlock())
 })
 
-app.get("/blocks/:indexOrHash", (req, res, next) => {
+app.get("/blocks/:indexOrHash", (req: Request, res: Response, next: NextFunction) => {
     let block;
     if (/^[0-9]+$/.test(req.params.indexOrHash)) {
         block = blockchain.getBlocks()[parseInt(req.params.indexOrHash)];
@@ -42,7 +37,7 @@ app.get("/blocks/:indexOrHash", (req, res, next) => {
     }
 });
 
-app.post("/blocks", (req, res, next) => {
+app.post("/blocks", (req: Request, res: Response, next: NextFunction) => {
     const block = new Block(req.body.index as number, req.body.previousHash as string, req.body.data as string);
     const validation = blockchain.addBlock(block);
 
@@ -52,6 +47,14 @@ app.post("/blocks", (req, res, next) => {
         res.status(400).json(validation);
     }
 });
+
+app.get("/status", (req: Request, res: Response, next: NextFunction) => {
+    res.json({
+        numberOfBlocks: blockchain.getBlocks().length,
+        isValid: blockchain.isValid(),
+        lastBlock: blockchain.getLastBlock()
+    })
+})
 
 export {
     app

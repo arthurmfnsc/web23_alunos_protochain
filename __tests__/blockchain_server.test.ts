@@ -14,6 +14,14 @@ describe("Blockchain server tests", () => {
             expect(response.body.isValid.success).toBeTruthy();
     });
 
+    test("GET /blocks/next - Should get next block info", async () => {
+        const response = await request(app)
+            .get("/blocks/next");
+        
+            expect(response.status).toEqual(200);
+            expect(response.body.index).toEqual(1);
+    });
+
     test("GET /blocks/:index - Should get genesis", async () => {
         const response = await request(app)
             .get("/blocks/0");
