@@ -1,15 +1,21 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express, {Request, Response, NextFunction} from 'express';
 import morgan from 'morgan';
 import Blockchain from '../lib/blockchain';
 import Block from '../lib/block';
+import BlockParams from '../lib/block_params';
 
-const PORT = 3000;
+/* c8 ignore next */
+const PORT = parseInt(`${process.env.BLOCKCHAIN_PORT}`) || 3000;
 
 const app = express();
-app.use(express.json())
+app.use(express.json());
 
 const blockchain = new Blockchain();
 
+/* c8 ignore start */
 if (process.argv.includes("--run")) {
     app.use(morgan("tiny"));
 
@@ -17,10 +23,11 @@ if (process.argv.includes("--run")) {
         console.log(`Blockchain server is running at ${PORT}!`)
     })
 }
+/* c8 ignore end */
 
 app.get("/blocks/next", (req: Request, res: Response, next: NextFunction) => {
-    res.json(blockchain.getNextBlock())
-})
+    res.json(blockchain.getNextBlock());
+});
 
 app.get("/blocks/:indexOrHash", (req: Request, res: Response, next: NextFunction) => {
     let block;
@@ -37,8 +44,23 @@ app.get("/blocks/:indexOrHash", (req: Request, res: Response, next: NextFunction
     }
 });
 
+app.get("/status", (req: Request, res: Response, next: NextFunction) => {
+    res.json({
+        numberOfBlocks: blockchain.getBlocks().length,
+        isValid: blockchain.isValid(),
+        lastBlock: blockchain.getLastBlock()
+    })
+});
+
 app.post("/blocks", (req: Request, res: Response, next: NextFunction) => {
-    const block = new Block(req.body.index as number, req.body.previousHash as string, req.body.data as string);
+    const block = new Block({
+        index: req.body.index as number,
+        previousHash: req.body.previousHash as string,
+        miner: req.body.miner as string,
+        nonce: req.body.nonce as number,
+        data: req.body.data as string
+    } as BlockParams);
+
     const validation = blockchain.addBlock(block);
 
     if (validation.isSucess()) {
@@ -47,14 +69,6 @@ app.post("/blocks", (req: Request, res: Response, next: NextFunction) => {
         res.status(400).json(validation);
     }
 });
-
-app.get("/status", (req: Request, res: Response, next: NextFunction) => {
-    res.json({
-        numberOfBlocks: blockchain.getBlocks().length,
-        isValid: blockchain.isValid(),
-        lastBlock: blockchain.getLastBlock()
-    })
-})
 
 export {
     app

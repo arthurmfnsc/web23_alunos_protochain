@@ -1,4 +1,5 @@
 import Block from "../src/lib/block";
+import BlockParams from "../src/lib/block_params";
 import Blockchain from "../src/lib/blockchain";
 
 jest.mock("../src/lib/block");
@@ -17,19 +18,31 @@ describe("Blockchain tests", () => {
 
     test("Should be valid (two blocks)", () => {
         const blockchain = new Blockchain();
-        blockchain.addBlock(new Block(1, blockchain.getBlocks()[0].getHash(), "Block 2"));
+        blockchain.addBlock(new Block({
+            index: 1, 
+            previousHash: blockchain.getBlocks()[0].getHash(), 
+            data: "Block 2"
+        } as BlockParams));
         expect(blockchain.isValid().isSucess()).toBeTruthy();
     })
 
     test("Should add block", () => {
         const blockchain = new Blockchain();
-        const result = blockchain.addBlock(new Block(1, blockchain.getBlocks()[0].getHash(), "Block 2"));
+        const result = blockchain.addBlock(new Block({
+            index: 1, 
+            previousHash: blockchain.getBlocks()[0].getHash(), 
+            data: "Block 2"
+        } as BlockParams));
         expect(result).toBeTruthy();
     })
 
     test("Should not add block", () => {
         const blockchain = new Blockchain();
-        const result = blockchain.addBlock(new Block(-1, blockchain.getBlocks()[0].getHash(), "Block 2"));
+        const result = blockchain.addBlock(new Block({
+            index: -1, 
+            previousHash: blockchain.getBlocks()[0].getHash(), 
+            data: "Block 2"
+        } as BlockParams));
         expect(result.isSucess()).toBeFalsy();
     })
 

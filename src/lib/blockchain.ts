@@ -1,5 +1,6 @@
 import Block from "./block";
 import BlockInfo from "./block_info";
+import BlockParams from "./block_params";
 import Validation from "./validation";
 
 export default class Blockchain {
@@ -9,7 +10,13 @@ export default class Blockchain {
     static MAX_DIFFICULTY = 62;
 
     constructor() {
-        this.blocks = [new Block(this.nextIndex, "", "Genesis Block")]
+        this.blocks = [
+            new Block({
+                index: this.nextIndex,
+                previousHash: "", 
+                data: "Genesis Block"
+            } as BlockParams)
+        ]
         this.nextIndex++;
     }
 

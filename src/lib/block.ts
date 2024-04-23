@@ -1,5 +1,7 @@
 import { SHA256 } from "crypto-js";
 import Validation from "./validation";
+import BlockInfo from "./block_info";
+import BlockParams from "./block_params";
 
 export default class Block {
     private readonly index: number;
@@ -7,14 +9,16 @@ export default class Block {
     private readonly previousHash: string;
     private readonly data: string;
     private hash: string;
-    private nonce = 0;
-    private miner = "";
+    private nonce;
+    private miner;
 
-    constructor(index: number, previousHash: string, data: string) {
-        this.index = index;
+    constructor(params?: BlockParams) {
+        this.index = params?.index || 0;
         this.timeStamp = Date.now();
-        this.previousHash = previousHash;
-        this.data = data;
+        this.previousHash = params?.previousHash || "";
+        this.miner = params?.miner || "";
+        this.nonce = params?.nonce || 0;
+        this.data = params?.data || "";
         this.hash = this.getHash();
     }
 
@@ -65,5 +69,13 @@ export default class Block {
         }
 
         return new Validation();
+    }
+
+    static fromBlockInfo(blockInfo: BlockInfo): Block {
+        return new Block({
+            index: blockInfo.index, 
+            previousHash: blockInfo.previousHash, 
+            data: blockInfo.data
+        } as BlockParams);
     }
 }
