@@ -1,3 +1,4 @@
+import BlockParams from "../block_params";
 import Validation from "../validation";
 
 export default class Block {
@@ -5,13 +6,17 @@ export default class Block {
     private readonly timeStamp: number;
     private readonly previousHash: string;
     private readonly data: string;
-    private readonly hash: string;
+    private hash: string;
+    private nonce;
+    private miner;
 
-    constructor(index: number, previousHash: string, data: string) {
-        this.index = index;
+    constructor(params?: BlockParams) {
+        this.index = params?.index || 0;
         this.timeStamp = Date.now();
-        this.previousHash = previousHash;
-        this.data = data;
+        this.previousHash = params?.previousHash || "";
+        this.miner = params?.miner || "";
+        this.nonce = params?.nonce || 0;
+        this.data = params?.data || "";
         this.hash = this.getHash();
     }
 

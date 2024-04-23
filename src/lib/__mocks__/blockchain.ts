@@ -1,13 +1,18 @@
 import Block from "./block";
 import Validation from "../validation";
 import BlockInfo from "../block_info";
+import BlockParams from "../block_params";
 
 export default class Blockchain {
     private readonly blocks: Block[];
     private nextIndex = 0;
     
     constructor() {
-        this.blocks = [new Block(this.nextIndex, "", "Genesis Block")]
+        this.blocks = [new Block({
+            index: this.nextIndex,
+            previousHash: "",
+            data: "Genesis Block"
+        } as BlockParams)]
         this.nextIndex++;
     }
 
