@@ -1,11 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import express, {Request, Response, NextFunction} from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
-import Blockchain from '../lib/blockchain';
 import Block from '../lib/block';
-import BlockParams from '../lib/block_params';
+import Blockchain from '../lib/blockchain';
 
 /* c8 ignore next */
 const PORT = parseInt(`${process.env.BLOCKCHAIN_PORT}`) || 3000;
@@ -59,7 +58,7 @@ app.post("/blocks", (req: Request, res: Response, next: NextFunction) => {
         miner: req.body.miner as string,
         nonce: req.body.nonce as number,
         data: req.body.data as string
-    } as BlockParams);
+    } as unknown as Block);
 
     const validation = blockchain.addBlock(block);
 

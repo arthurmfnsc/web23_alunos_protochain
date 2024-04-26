@@ -1,7 +1,6 @@
 import request from "supertest";
-import {app} from "../src/server/blockchain_server"
 import Block from "../src/lib/block";
-import BlockParams from "../src/lib/block_params";
+import { app } from "../src/server/blockchain_server";
 
 jest.mock("../src/lib/block");
 jest.mock("../src/lib/blockchain");
@@ -49,7 +48,7 @@ describe("Blockchain server tests", () => {
     test("POST /blocks/ - Should add block", async () => {
         const block = new Block({
             index: 1
-        } as BlockParams);
+        } as unknown as Block);
         const response = await request(app)
             .post("/blocks")
             .send(block);
@@ -61,7 +60,7 @@ describe("Blockchain server tests", () => {
     test("POST /blocks/ - Should not add block", async () => {
         const block = new Block({
             index: -1
-        } as BlockParams);
+        } as unknown as Block);
         const response = await request(app)
             .post("/blocks")
             .send(block);

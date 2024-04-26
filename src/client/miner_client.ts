@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import axios from "axios";
-import BlockInfo from "../lib/block_info";
 import Block from "../lib/block";
+import BlockInfo from "../lib/block_info";
 
 const BLOCKCHAIN_SERVER = process.env.BLOCKCHAIN_SERVER;
 const minerWallet = {
