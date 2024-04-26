@@ -1,24 +1,26 @@
 import { SHA256 } from "crypto-js";
-import Validation from "./validation";
 import BlockInfo from "./block_info";
-import BlockParams from "./block_params";
+import Transaction from "./transaction";
+import TransactionType from "./transaction_type";
+import Validation from "./validation";
 
 export default class Block {
     private readonly index: number;
-    private readonly timeStamp: number;
+    private readonly timestamp: number;
     private readonly previousHash: string;
-    private readonly data: string;
+    private readonly transactions: Transaction[];
     private hash: string;
-    private nonce;
-    private miner;
+    private nonce: number;
+    private miner: string;
 
-    constructor(params?: BlockParams) {
-        this.index = params?.index || 0;
-        this.timeStamp = Date.now();
-        this.previousHash = params?.previousHash || "";
-        this.miner = params?.miner || "";
-        this.nonce = params?.nonce || 0;
-        this.data = params?.data || "";
+    constructor(block?: Block) {
+        this.index = block?.index || 0;
+        this.timestamp = Date.now();
+        this.previousHash = block?.previousHash || "";
+        this.miner = block?.miner || "";
+        this.nonce = block?.nonce || 0;
+        this.transactions = block?.transactions 
+            ? block.transactions.map(tx => new Transaction(tx)) : [] as Transaction[];
         this.hash = this.getHash();
     }
 
@@ -27,7 +29,9 @@ export default class Block {
     }
 
     getHash(): string {
-        return SHA256(this.index + this.data +this.timeStamp + this.previousHash + this.nonce + this.miner).toString();
+        const txs = this.transactions && this.transactions.length 
+            ? this.transactions.map(tx => tx.getHash()).reduce((a, b) => a + b) : "";
+        return SHA256(this.index + txs +this.timestamp + this.previousHash + this.nonce + this.miner).toString();
     }
 
     mine(difficulty: number, miner: string) {
@@ -42,6 +46,18 @@ export default class Block {
     }
 
     isValid(previousHash: string, previousIndex: number, difficulty: number): Validation {
+        if (this.transactions && this.transactions.length) {
+            if (this.transactions.filter(tx => tx.getType() === TransactionType.FEE).length > 1) {
+                return new Validation(false, "Too many fees!");
+            }
+
+            const validations = this.transactions.map(tx => tx.isValid());
+            const erros = validations.filter(v => !v.isSucess()).map(v => v.getMessage());
+            if (validations.filter(v => !v.isSucess()).length > 0) {
+                return new Validation(false, `Invalid block due to tx: ${erros.reduce((a, b) => a + b)}`);
+            }
+        }
+
         if (this.index < 0) {
             return new Validation(false, "Invalid index!");
         }
@@ -52,10 +68,6 @@ export default class Block {
 
         if (this.previousHash !== previousHash) {
             return new Validation(false, "Invalid previous hash!");
-        }
-
-        if (!this.data) {
-            return new Validation(false, "Invalid data!");
         }
 
         if (!this.nonce || !this.miner) {
@@ -73,9 +85,9 @@ export default class Block {
 
     static fromBlockInfo(blockInfo: BlockInfo): Block {
         return new Block({
-            index: blockInfo.index, 
-            previousHash: blockInfo.previousHash, 
-            data: blockInfo.data
-        } as BlockParams);
+            index: blockInfo.index,
+            previousHash: blockInfo.previousHash,
+            transactions: blockInfo.transactions
+        } as unknown as Block);
     }
 }
