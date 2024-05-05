@@ -5,6 +5,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import Block from '../lib/block';
 import Blockchain from '../lib/blockchain';
+import Transaction from "../lib/transaction";
 
 /* c8 ignore next */
 const PORT = parseInt(`${process.env.BLOCKCHAIN_PORT}`) || 3000;
@@ -45,10 +46,21 @@ app.get("/blocks/:indexOrHash", (req: Request, res: Response, next: NextFunction
 
 app.get("/status", (req: Request, res: Response, next: NextFunction) => {
     res.json({
-        numberOfBlocks: blockchain.getBlocks().length,
+        mempool: blockchain.getMempool().length,
+        blocks: blockchain.getBlocks().length,
         isValid: blockchain.isValid(),
         lastBlock: blockchain.getLastBlock()
     })
+});
+
+app.get("/transactions/:hash?", (req: Request, res: Response, next: NextFunction) => {
+    if (req.params.hash) {
+        res.json(blockchain.getTransaction(req.params.hash));
+    }
+    res.json({
+        next: blockchain.getMempool().slice(0, Blockchain.TX_PER_BLOCK),
+        total: blockchain.getMempool().length
+    });
 });
 
 app.post("/blocks", (req: Request, res: Response, next: NextFunction) => {
@@ -64,6 +76,21 @@ app.post("/blocks", (req: Request, res: Response, next: NextFunction) => {
 
     if (validation.isSucess()) {
         res.status(201).json(block);
+    } else {
+        res.status(400).json(validation);
+    }
+});
+
+app.post("/transactions", (req: Request, res: Response, next: NextFunction) => {
+    if (req.body.hash === undefined) {
+        return res.sendStatus(422);
+    }
+
+    const tx = new Transaction(req.body as Transaction);
+    const validation = blockchain.addTransaction(tx);
+
+    if (validation.isSucess()) {
+        res.status(201).json(tx);
     } else {
         res.status(400).json(validation);
     }

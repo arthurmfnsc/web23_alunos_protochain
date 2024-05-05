@@ -31,6 +31,7 @@ const config: Config = {
   coveragePathIgnorePatterns: [
     "/node_modules/",
     "/src/lib/block_info.ts",
+    "/src/lib/transaction_search.ts",
     "/src/lib/transaction_type.ts"
   ],
 
