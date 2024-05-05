@@ -34,6 +34,10 @@ export default class Block {
         return SHA256(this.index + txs +this.timestamp + this.previousHash + this.nonce + this.miner).toString();
     }
 
+    getTransactions(): Transaction[] {
+        return this.transactions;
+    }
+
     mine(difficulty: number, miner: string) {
         this.miner = miner;
 
